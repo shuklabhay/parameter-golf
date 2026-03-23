@@ -1,0 +1,10 @@
+{
+  "name": "baseline_sp1024_1xh100_10min",
+  "experiment_rel_dir": "records/my_exp/baseline",
+  "script": "train_gpt.py",
+  "gpu": "H100:1",
+  "max_wallclock_seconds": 600,
+  "data_variant": "sp1024",
+  "train_shards": 80,
+  "nproc_per_node": 1
+}
