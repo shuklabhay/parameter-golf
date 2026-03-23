@@ -3,14 +3,13 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import modal
-
-from run_result_parser import parse_training_log, write_result_files
 
 APP_NAME: str = "parameter-golf-my-exp"
 MODAL_ENVIRONMENT: str = "parametergolf"
@@ -22,6 +21,9 @@ DATASET_DIR: Path = VOLUME_ROOT / "datasets" / "fineweb10B_sp1024"
 CURATED_DATASETS_ROOT: Path = VOLUME_ROOT / "datasets_curated"
 TOKENIZER_PATH: Path = VOLUME_ROOT / "tokenizers" / "fineweb_1024_bpe.model"
 DEFAULT_MIX_CONFIG: Path = PROJECT_ROOT / "data" / "val_like_mix_v1.json"
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+from run_result_parser import parse_training_log, write_result_files
 
 app: modal.App = modal.App(APP_NAME)
 image: modal.Image = modal.Image.debian_slim(
@@ -258,6 +260,8 @@ def prepare_data_full_sp1024(train_shards: int = 80) -> dict[str, Any]:
 def prepare_curated_data_sp1024(
     mix_config_rel_path: str = "data/val_like_mix_v1.json",
     output_dataset_name: str | None = None,
+    workers: int = 24,
+    max_cached_shards: int = 8,
 ) -> dict[str, Any]:
     """Builds one curated sp1024 train prefix dataset in-volume and returns curation stats."""
 
@@ -274,20 +278,30 @@ def prepare_curated_data_sp1024(
     output_dataset_dir: Path = CURATED_DATASETS_ROOT / resolved_dataset_name
     stats_dir: Path = VOLUME_ROOT / "curation_stats"
     stats_path: Path = stats_dir / f"{resolved_dataset_name}.json"
+    manifest_dir: Path = VOLUME_ROOT / "curation_manifests"
+    manifest_path: Path = manifest_dir / f"{resolved_dataset_name}.jsonl"
 
     cmd: list[str] = [
         "python",
         str(PROJECT_ROOT / "data" / "build_curated_prefix.py"),
+        "--mode",
+        "full",
         "--input-dataset-dir",
         str(DATASET_DIR),
         "--tokenizer-path",
         str(TOKENIZER_PATH),
+        "--manifest-path",
+        str(manifest_path),
         "--output-dataset-dir",
         str(output_dataset_dir),
         "--mix-config",
         str(mix_config_path),
         "--stats-out",
         str(stats_path),
+        "--workers",
+        str(max(1, workers)),
+        "--max-cached-shards",
+        str(max(1, max_cached_shards)),
     ]
     proc: subprocess.CompletedProcess[str] = subprocess.run(
         cmd,
@@ -314,6 +328,7 @@ def prepare_curated_data_sp1024(
         "mix_config_path": str(mix_config_path),
         "output_dataset_name": resolved_dataset_name,
         "output_dataset_dir": str(output_dataset_dir),
+        "manifest_path": str(manifest_path),
         "stats_path": str(stats_path),
         "stats": stats_payload,
         "dataset_checks": dataset_checks,
