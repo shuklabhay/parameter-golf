@@ -1,0 +1,46 @@
+{
+  "name": "fineweb10B_sp1024_val_like_web_mix_v1",
+  "source_train_shards": 80,
+  "target_train_tokens": 1000000000,
+  "sample_decode_tokens": 640,
+  "min_score": 1.2,
+  "positive_patterns": [
+    {
+      "name": "news",
+      "pattern": "\\b(reuters|associated press|published|updated|breaking|according to|report(ed)? by|on (monday|tuesday|wednesday|thursday|friday))\\b",
+      "weight": 1.2
+    },
+    {
+      "name": "forum",
+      "pattern": "\\b(posted by|reply|thread|forum|commented|viewing single post|re:)\\b",
+      "weight": 1.1
+    },
+    {
+      "name": "shopping",
+      "pattern": "\\b(coupon|free shipping|discount|deal|% off|sale|promo code|order \\$)\\b",
+      "weight": 1.0
+    },
+    {
+      "name": "sports",
+      "pattern": "\\b(nfl|nba|mlb|nhl|quarterback|coach|season|playoffs|matchup|seahawks)\\b",
+      "weight": 0.9
+    },
+    {
+      "name": "general_web",
+      "pattern": "\\b(blog|posted|comments|episode|review|watch|channel|newsletter|users?)\\b",
+      "weight": 0.4
+    }
+  ],
+  "negative_patterns": [
+    {
+      "name": "explicit_code",
+      "pattern": "(```|<code>|</code>|\\bdef\\s+\\w+\\(|\\bclass\\s+\\w+\\s*[:\\(]|\\bimport\\s+[a-zA-Z0-9_\\.]+\\b)",
+      "weight": 1.1
+    },
+    {
+      "name": "boilerplate",
+      "pattern": "\\b(all rights reserved|privacy policy|terms of service|cookie policy)\\b",
+      "weight": 0.7
+    }
+  ]
+}

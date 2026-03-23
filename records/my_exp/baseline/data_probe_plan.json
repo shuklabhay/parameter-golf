@@ -1,0 +1,37 @@
+{
+  "name": "data_prefix_probe_v1",
+  "primary_metric": "final_int8_zlib_roundtrip_exact.val_bpb",
+  "promotion_threshold_delta_val_bpb": -0.01,
+  "mix_config": "data/val_like_mix_v1.json",
+  "runs": [
+    {
+      "id": "control_probe",
+      "entrypoint": "run_data_probe",
+      "use_curated": false,
+      "use_h100": false,
+      "max_wallclock_seconds": 180,
+      "train_batch_tokens": 131072,
+      "dataset_rel_path": "datasets/fineweb10B_sp1024"
+    },
+    {
+      "id": "curated_probe",
+      "entrypoint": "run_data_probe",
+      "build_curated": true,
+      "use_curated": true,
+      "use_h100": false,
+      "max_wallclock_seconds": 180,
+      "train_batch_tokens": 131072,
+      "dataset_rel_path": "datasets_curated/fineweb10B_sp1024_val_like_web_mix_v1"
+    },
+    {
+      "id": "curated_h100_confirm",
+      "entrypoint": "run_data_probe",
+      "build_curated": false,
+      "use_curated": true,
+      "use_h100": true,
+      "max_wallclock_seconds": 600,
+      "train_batch_tokens": 524288,
+      "dataset_rel_path": "datasets_curated/fineweb10B_sp1024_val_like_web_mix_v1"
+    }
+  ]
+}
