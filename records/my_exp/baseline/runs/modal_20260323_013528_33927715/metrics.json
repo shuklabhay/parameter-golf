@@ -1,0 +1,8 @@
+{
+  "bytes_total": 14619487,
+  "final_metric_name": "final_int8_zlib_roundtrip_exact",
+  "max_train_time_ms": 600206,
+  "run_id": "modal_20260323_013528_33927715",
+  "val_bpb": 1.30724523,
+  "val_loss": 2.20722881
+}

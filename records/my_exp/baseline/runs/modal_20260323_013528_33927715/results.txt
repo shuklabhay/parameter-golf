@@ -1,0 +1,10 @@
+run_id: modal_20260323_013528_33927715
+final_metric: final_int8_zlib_roundtrip_exact
+val_loss: 2.20722881
+val_bpb: 1.30724523
+bytes_total: 14619487
+max_train_time_ms: 600206
+has_final_eval: True
+under_16mb: True
+within_10min_cap: True
+saw_wallclock_stop: True

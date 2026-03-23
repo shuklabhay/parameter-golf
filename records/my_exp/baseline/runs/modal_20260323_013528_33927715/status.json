@@ -1,0 +1,6 @@
+{
+  "has_final_eval": true,
+  "saw_wallclock_stop": true,
+  "under_16mb": true,
+  "within_10min_cap": true
+}
