@@ -15,7 +15,7 @@ import modal
 APP_NAME: str = "parameter-golf-my-exp"
 MODAL_ENVIRONMENT: str = "parametergolf"
 VOLUME_NAME: str = "parametergolf_fineweb_sp1024_full"
-PROJECT_ROOT: Path = Path(__file__).resolve().parent
+PROJECT_ROOT: Path = Path("/root/project")
 VOLUME_ROOT: Path = Path("/vol/parameter-golf-data")
 RUNS_ROOT: Path = VOLUME_ROOT / "runs"
 DATASET_DIR: Path = VOLUME_ROOT / "datasets" / "fineweb10B_sp1024"
@@ -25,6 +25,7 @@ app: modal.App = modal.App(APP_NAME)
 image: modal.Image = modal.Image.debian_slim(
     python_version="3.11"
 ).pip_install_from_requirements("requirements.txt")
+image = image.add_local_dir(".", remote_path="/root/project")
 data_volume: modal.Volume = modal.Volume.from_name(
     VOLUME_NAME,
     create_if_missing=True,
@@ -219,8 +220,7 @@ def prepare_data_full_sp1024(train_shards: int = 80) -> dict[str, Any]:
 
     cmd: list[str] = [
         "python",
-        "-m",
-        "data.cached_challenge_fineweb",
+        str(PROJECT_ROOT / "data" / "cached_challenge_fineweb.py"),
         "--variant",
         "sp1024",
         "--train-shards",
