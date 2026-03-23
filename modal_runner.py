@@ -209,6 +209,7 @@ def _count_files(pattern: str) -> int:
     volumes={VOLUME_ROOT: data_volume},
     timeout=60 * 60 * 6,
     cpu=4,
+    include_source=True,
 )
 def prepare_data_full_sp1024(train_shards: int = 80) -> dict[str, Any]:
     """Downloads full sp1024 challenge data into the mounted Modal volume and returns file counts."""
@@ -218,7 +219,8 @@ def prepare_data_full_sp1024(train_shards: int = 80) -> dict[str, Any]:
 
     cmd: list[str] = [
         "python",
-        str(PROJECT_ROOT / "data" / "cached_challenge_fineweb.py"),
+        "-m",
+        "data.cached_challenge_fineweb",
         "--variant",
         "sp1024",
         "--train-shards",
@@ -271,10 +273,11 @@ def prepare_data_full_sp1024(train_shards: int = 80) -> dict[str, Any]:
 @app.function(
     image=image,
     volumes={VOLUME_ROOT: data_volume},
-    gpu=modal.gpu.H100(count=1),
+    gpu="H100",
     timeout=60 * 60,
     cpu=16,
     memory=65536,
+    include_source=True,
 )
 def run_experiment(
     experiment_rel_dir: str = "records/my_exp/baseline",
